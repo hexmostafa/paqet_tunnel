@@ -323,25 +323,32 @@ while true; do
 done
 PAQET_SCRIPT
 
+# --- بخش اصلاح شده نهایی ---
+
+# اطمینان از دسترسی کامل به فایل مدیر
 chmod +x "$SCRIPT_PATH"
 
 echo "→ Activating HEX_PAQET command (Global Link)..."
 
-# ۱. پاکسازی: اگر از قبل الیاس در bashrc هست، حذفش می‌کنیم تا تداخل نداشته باشه
+# ۱. پاکسازی الیاس قدیمی از bashrc برای جلوگیری از تداخل دستورات
 sed -i '/alias HEX_PAQET=/d' ~/.bashrc
 
-# ۲. ایجاد Symlink: این دستور جادویی است که باعث می‌شود دستور همه جا کار کند
-# فایل منیجر شما را به مسیر دستورات سیستم متصل می‌کند
+# ۲. ایجاد لینک سیستمی در bin (استاندارد لینوکس)
+# این کار باعث می‌شود دستور HEX_PAQET در همه جا بدون نیاز به source شناخته شود
 ln -sf "$SCRIPT_PATH" /usr/local/bin/HEX_PAQET
-
-# ۳. اطمینان از دسترسی اجرای لینک
 chmod +x /usr/local/bin/HEX_PAQET
 
 echo -e "\n${GREEN}═══════════════════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}  Installation complete!${NC}"
-echo -e "  The command ${CYAN}HEX_PAQET${NC} is now globally available."
-echo -e "  You can run it from any directory without any source command."
+echo -e "${GREEN}  Installation Complete Successfully!${NC}"
+echo -e "  Global Command: ${CYAN}HEX_PAQET${NC}"
+echo -e "  Manager Path: ${YELLOW}$SCRIPT_PATH${NC}"
 echo -e "${GREEN}═══════════════════════════════════════════════════════════════${NC}"
 
-# اجرای مستقیم پنل بدون معطلی
-HEX_PAQET
+# ۳. اجرای هوشمند پنل
+# استفاده از < /dev/tty باعث می‌شود حتی اگر با curl نصب شده باشد،
+# منو باز بماند و منتظر ورودی کاربر باشد.
+echo -e "Launching manager..."
+sleep 2
+
+# اجرای نهایی با هدایت ورودی به ترمینال کاربر
+bash "$SCRIPT_PATH" < /dev/tty
