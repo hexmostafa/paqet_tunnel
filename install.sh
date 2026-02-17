@@ -165,25 +165,27 @@ setup_iran() {
     echo "1) Quick 2) Advanced"
     read -p "Choice: " tune_choice
     if [[ "$tune_choice" == "2" ]]; then get_kcp_params; else mtu=1350 interval=10 resend=2 nodelay=1 rcvwnd=4096 sndwnd=4096; fi
+    
     ip tuntap add dev tun-$t_name mode tun || true
     ip addr add $v_local/24 dev tun-$t_name || true
     ip link set tun-$t_name up || true
 
-    # ساخت لیست forward به صورت درست (با خط جدید واقعی)
+    # ساخت لیست forward به صورت استاندارد
     FORWARDS=""
     echo -e "${YELLOW}Ports (type 'done' to finish):${NC}"
     while true; do
         read -p "Port: " p
         [[ "$p" == "done" || -z "$p" ]] && break
         [[ ! "$p" =~ ^[0-9]+$ ]] && { echo "Invalid port"; continue; }
-        FORWARDS+=$'- { listen: ":$p", target: "'"$v_target"':'"$p"'", protocol: "tcp" }\n'
+        # اضافه کردن هر پورت در یک خط جدید با رعایت فاصله (Indentation)
+        FORWARDS+="  - { listen: \":$p\", target: \"$v_target:$p\", protocol: \"tcp\" }\n"
     done
 
-    # نوشتن YAML با فرمت دقیق
+    # نوشتن فایل کانفیگ با استفاده از printf برای تفسیر درست \n
     cat <<EOF > "$CONFIG_DIR/$t_name.yaml"
 role: client
 forward:
-${FORWARDS%%\\n}  # حذف \n آخر اگر وجود داشت
+$(printf "$FORWARDS")
 server: { addr: "$kh_ip:$t_port" }
 network:
   interface: "$(get_iface)"
