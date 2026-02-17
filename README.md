@@ -56,7 +56,7 @@ It simplifies complex networking configurations into a clean, interactive termin
 Run the following command on your server:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/hexmostafa/paqet-manager/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/hexmostafa/paqet_tunnel/main/install.sh | bash
 ```
 
 > ⚠ If your repository name or GitHub username is different, replace `hexmostafa/paqet-manager` accordingly.
